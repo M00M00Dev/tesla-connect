@@ -12,7 +12,8 @@ export default function Home() {
   const [actions, setActions] = useState<string[]>([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [supported, setSupported] = useState(true);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     if (!("SpeechRecognition" in window) && !("webkitSpeechRecognition" in window)) {
@@ -21,17 +22,16 @@ export default function Home() {
   }, []);
 
   function startListening() {
-    const SpeechRecognition =
-      (window as unknown as { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition ||
-      (window as unknown as { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const w = window as any;
+    const SR = w.SpeechRecognition || w.webkitSpeechRecognition;
+    if (!SR) {
       setErrorMsg("Speech recognition not supported in this browser.");
       setStatus("error");
       return;
     }
 
-    const recognition = new SpeechRecognition();
+    const recognition = new SR();
     recognition.lang = "en-AU";
     recognition.continuous = false;
     recognition.interimResults = false;
