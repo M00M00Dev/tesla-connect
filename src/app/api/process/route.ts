@@ -5,8 +5,8 @@ import { google } from "googleapis";
 
 export const maxDuration = 60;
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const openai = () => new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const anthropic = () => new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 function googleAuth() {
   const auth = new google.auth.OAuth2(
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
     if (!audioFile) return NextResponse.json({ error: "No audio file provided" }, { status: 400 });
 
     // Transcribe
-    const transcription = await openai.audio.transcriptions.create({
+    const transcription = await openai().audio.transcriptions.create({
       file: audioFile,
       model: "whisper-1",
       language: "en",
@@ -162,7 +162,7 @@ Rules:
     let done = false;
 
     while (!done) {
-      const response = await anthropic.messages.create({
+      const response = await anthropic().messages.create({
         model: "claude-sonnet-4-6",
         max_tokens: 1024,
         system: systemPrompt,
