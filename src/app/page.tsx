@@ -37,14 +37,16 @@ export default function Home() {
     recognition.interimResults = false;
     recognitionRef.current = recognition;
 
-    recognition.onresult = async (e) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onresult = async (e: any) => {
       const text = e.results[0][0].transcript;
       setTranscript(text);
       setStatus("processing");
       await process(text);
     };
 
-    recognition.onerror = (e) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    recognition.onerror = (e: any) => {
       setErrorMsg(`Mic error: ${e.error}`);
       setStatus("error");
     };
