@@ -53,18 +53,15 @@ async function createTask(title: string, dueDate?: string, notes?: string) {
 }
 
 async function addNote(content: string, category = "General") {
-  const docId = process.env.GOOGLE_IDEAS_DOC_ID;
-  if (!docId) return;
-  const docs = google.docs({ version: "v1", auth: googleAuth() });
+  const sheetId = process.env.GOOGLE_IDEAS_DOC_ID;
+  if (!sheetId) return;
+  const sheets = google.sheets({ version: "v4", auth: googleAuth() });
   const date = new Date().toLocaleDateString("en-AU");
-  const text = `\n[${date}] [${category}]\n${content}\n`;
-  const doc = await docs.documents.get({ documentId: docId });
-  const endIndex = doc.data.body?.content?.at(-1)?.endIndex ?? 1;
-  await docs.documents.batchUpdate({
-    documentId: docId,
-    requestBody: {
-      requests: [{ insertText: { location: { index: endIndex - 1 }, text } }],
-    },
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: sheetId,
+    range: "Ideas!A:C",
+    valueInputOption: "RAW",
+    requestBody: { values: [[date, category, content]] },
   });
 }
 
